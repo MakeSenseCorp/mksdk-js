@@ -19,6 +19,7 @@ function MkSGateway (key) {
 	// Callbacks
 	this.OnGatewayDataArrivedCallback 		= null;
 	this.OnGatewayConnectedCallback			= null;
+	this.OnGatewayAdminCallback 			= null;
 	
 	// Monitoring
 	this.CallbacksMonitorId	= 0;
@@ -41,7 +42,7 @@ MkSGateway.prototype.CallbacksMonitor = function () {
 			if (this.Callbacks.hasOwnProperty(key)) {
 				item = this.Callbacks[key];
 				
-				if (item.timeout_counter > 5) {
+				if (item.timeout_counter > 2) {
 					try {
 						item.callback(null, {error: "timeout"});
 					}
@@ -89,21 +90,28 @@ MkSGateway.prototype.Connect = function (callback) {
 		
 		this.WS.onmessage = function (event) {
 			var jsonData = JSON.parse(event.data);
-
-			console.log("[#2] Identifier #", jsonData.piggybag.identifier, "recieved.", jsonData.data.header.command);
 			
-			if (self.Callbacks[jsonData.piggybag.identifier]) {
-				handler = self.Callbacks[jsonData.piggybag.identifier];
-				handler.callback(jsonData, {error: "none"});
-				
-				console.log("[#2] Delete Identifier #", jsonData.piggybag.identifier);
-				delete self.Callbacks[jsonData.piggybag.identifier];
-
-				if (null != self.OnGatewayConnectedCallback) {
-					self.OnGatewayConnectedCallback(jsonData);
+			if ("GATEWAY" == jsonData.header.source) {
+				console.log(jsonData);
+				if (self.OnGatewayAdminCallback) {
+					self.OnGatewayAdminCallback(jsonData.data);
 				}
 			} else {
-				console.log('[ERROR] Unexpected idetifier', jsonData.piggybag.identifier);
+				console.log("[#2] Identifier #", jsonData.piggybag.identifier, "recieved.", jsonData.data.header.command);
+				
+				if (self.Callbacks[jsonData.piggybag.identifier]) {
+					handler = self.Callbacks[jsonData.piggybag.identifier];
+					handler.callback(jsonData, {error: "none"});
+					
+					console.log("[#2] Delete Identifier #", jsonData.piggybag.identifier);
+					delete self.Callbacks[jsonData.piggybag.identifier];
+
+					if (null != self.OnGatewayConnectedCallback) {
+						self.OnGatewayConnectedCallback(jsonData);
+					}
+				} else {
+					console.log('[ERROR] Unexpected idetifier', jsonData.piggybag.identifier);
+				}
 			}
 		}
 		
