@@ -1,6 +1,7 @@
 function MkSGateway (key) {
 	self = this;
 	
+	this.WS 				= null;
 	this.Key 				= key;
 	this.RestAPIPort 		= 8081;
 	this.WSServerPort		= 1982;
@@ -56,7 +57,9 @@ MkSGateway.prototype.Connect = function (callback) {
 		this.WS.onmessage = function (event) {
 			var jsonData = JSON.parse(event.data);
 
+			console.log("[#2] Identifier #", jsonData.piggybag.identifier, "recieved.", jsonData.data.header.command);
 			self.Callbacks[jsonData.piggybag.identifier](jsonData);
+			console.log("[#2] Delete Identifier #", jsonData.piggybag.identifier);
 			delete self.Callbacks[jsonData.piggybag.identifier];
 
 			if (null != self.OnGatewayConnectedCallback) {
@@ -72,6 +75,8 @@ MkSGateway.prototype.Connect = function (callback) {
 }
 
 MkSGateway.prototype.Send = function (type, dest_uuid, cmd, payload, additional, callback) {
+	var self = this;
+
 	if ("" == additional) {
 		additional = {};
 	}
@@ -98,15 +103,16 @@ MkSGateway.prototype.Send = function (type, dest_uuid, cmd, payload, additional,
 		},
 		additional: additional,
 		piggybag: {
-			identifier: self.PacketCounter
+			identifier: this.PacketCounter
 		}
 	}
 	
-	self.Callbacks[self.PacketCounter] = callback;
+	this.Callbacks[this.PacketCounter] = callback;
+	console.log("[#2] Identifier #", this.PacketCounter, "sent.", cmd);
 
-	self.PacketCounter++;
-	if (self.PacketCounter < 1) {
-		self.PacketCounter = 0;
+	this.PacketCounter++;
+	if (this.PacketCounter < 1) {
+		this.PacketCounter = 0;
 	}
 
 	this.WS.send(JSON.stringify(request));
