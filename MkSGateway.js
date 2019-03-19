@@ -21,7 +21,7 @@ function MkSGateway (key) {
 	this.OnGatewayConnectedCallback			= null;
 	
 	// Monitoring
-	this.CallbacksMonitor 	= 0;
+	this.CallbacksMonitorId	= 0;
 	
 	return this;
 }
@@ -34,18 +34,26 @@ MkSGateway.prototype.CallbacksMonitor = function () {
 	console.log("(CallbacksMonitor)");
 	if (0 == Object.keys(this.Callbacks).length) {
 		console.log("(CallbacksMonitor) Callbacks list empty");
-		clearInterval(this.CallbacksMonitor);
+		clearInterval(this.CallbacksMonitorId);
+		this.CallbacksMonitorId	= 0;
 	} else {
 		for (key in this.Callbacks) {
 			if (this.Callbacks.hasOwnProperty(key)) {
 				item = this.Callbacks[key];
 				
 				if (item.timeout_counter > 5) {
-					// Call callback with error.
-					item.callback(null, {error: "timeout"});
-					delete item;
+					try {
+						item.callback(null, {error: "timeout"});
+					}
+					catch (e) {
+						console.log("[ERROR] (CallbacksMonitor)", e.message);
+					}
+					
+					delete this.Callbacks[key];
+					console.log(Object.keys(this.Callbacks).length);
 				} else {
 					item.timeout_counter++;
+					console.log(item.timeout_counter);
 				}
 			}
 		}
@@ -153,11 +161,11 @@ MkSGateway.prototype.Send = function (type, dest_uuid, cmd, payload, additional,
 	if (this.PacketCounter < 1) {
 		this.PacketCounter = 0;
 	}
-
+	
 	this.WS.send(JSON.stringify(request));
 	
-	if (!this.CallbacksMonitor) {
-		this.CallbacksMonitor = setInterval(this.CallbacksMonitor, 1000);
+	if (!this.CallbacksMonitorId) {
+		this.CallbacksMonitorId = setInterval(this.CallbacksMonitor.bind(this), 1000);
 	}
 }
 
