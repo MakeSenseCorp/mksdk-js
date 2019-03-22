@@ -42,7 +42,7 @@ MkSGateway.prototype.CallbacksMonitor = function () {
 			if (this.Callbacks.hasOwnProperty(key)) {
 				item = this.Callbacks[key];
 				
-				if (item.timeout_counter > 2) {
+				if (item.timeout_counter > item.timeout) {
 					try {
 						item.callback(null, {error: "timeout"});
 					}
@@ -54,7 +54,7 @@ MkSGateway.prototype.CallbacksMonitor = function () {
 					console.log(Object.keys(this.Callbacks).length);
 				} else {
 					item.timeout_counter++;
-					console.log(item.timeout_counter);
+					console.log(item.timeout_counter, item.timeout);
 				}
 			}
 		}
@@ -161,7 +161,8 @@ MkSGateway.prototype.Send = function (type, dest_uuid, cmd, payload, additional,
 	
 	this.Callbacks[this.PacketCounter] = { 
 											callback: callback,
-											timeout_counter: 0
+											timeout_counter: 0,
+											timeout: 3
 										 };
 	console.log("[#2] Identifier #", this.PacketCounter, "sent.", cmd);
 

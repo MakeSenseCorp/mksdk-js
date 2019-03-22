@@ -42,6 +42,10 @@ MkSAPI.prototype.UploadFileContent = function (uuid, payload, callback) {
 	this.Gateway.Send("DIRECT", uuid, "upload_file", payload, "", callback);
 }
 
+MkSAPI.prototype.SendCustomCommand = function (uuid, command, payload, callback) {
+	this.Gateway.Send("DIRECT", uuid, command, payload, "", callback);
+}
+
 var MkSAPIBuilder = (function () {
 	var Instance;
 
