@@ -162,7 +162,7 @@ MkSGateway.prototype.Send = function (type, dest_uuid, cmd, payload, additional,
 	this.Callbacks[this.PacketCounter] = { 
 											callback: callback,
 											timeout_counter: 0,
-											timeout: 3
+											timeout: 5
 										 };
 	console.log("[#2] Identifier #", this.PacketCounter, "sent.", cmd);
 
