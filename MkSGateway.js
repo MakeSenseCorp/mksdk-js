@@ -20,6 +20,7 @@ function MkSGateway (key) {
 	this.OnGatewayDataArrivedCallback 		= null;
 	this.OnGatewayConnectedCallback			= null;
 	this.OnGatewayAdminCallback 			= null;
+	this.OnUnexpectedDataArrived 			= null;
 	
 	// Monitoring
 	this.CallbacksMonitorId	= 0;
@@ -27,12 +28,33 @@ function MkSGateway (key) {
 	return this;
 }
 
+MkSGateway.prototype.PostRequest = function (port, method, payload, callback) {
+	var RequestData = {
+		request: method,
+		data: payload
+	};
+	console.log(port, method);
+	MkSGlobal.AjaxPostRequest(this.RestAPIUrl + ":" + port, method, "json", RequestData, function(response) {
+		callback(response);
+	});
+}
+
+MkSGateway.prototype.GetRequest = function (port, method, callback) {
+	MkSGlobal.AjaxGetRequest(this.RestAPIUrl + ":" + port + method, function(response) {
+		callback(response);
+	});
+}
+
+MkSGateway.prototype.OpenURL = function (port, method) {
+	window.open(this.RestAPIUrl + ":" + port + method);
+}
+
 MkSGateway.prototype.WSWatchdog = function () {
 	
 }
 
 MkSGateway.prototype.CallbacksMonitor = function () {
-	console.log("(CallbacksMonitor)");
+	// console.log("(CallbacksMonitor)");
 	if (0 == Object.keys(this.Callbacks).length) {
 		console.log("(CallbacksMonitor) Callbacks list empty");
 		clearInterval(this.CallbacksMonitorId);
@@ -51,10 +73,10 @@ MkSGateway.prototype.CallbacksMonitor = function () {
 					}
 					
 					delete this.Callbacks[key];
-					console.log(Object.keys(this.Callbacks).length);
+					// console.log(Object.keys(this.Callbacks).length);
 				} else {
 					item.timeout_counter++;
-					console.log(item.timeout_counter, item.timeout);
+					// console.log(item.timeout_counter, item.timeout);
 				}
 			}
 		}
@@ -110,7 +132,10 @@ MkSGateway.prototype.Connect = function (callback) {
 						self.OnGatewayConnectedCallback(jsonData);
 					}
 				} else {
-					console.log('[ERROR] Unexpected idetifier', jsonData.piggybag.identifier);
+					console.log('[ERROR] Unexpected identifier', jsonData.piggybag.identifier);
+					if (self.OnUnexpectedDataArrived) {
+						self.OnUnexpectedDataArrived(jsonData);
+					}
 				}
 			}
 		}
@@ -141,7 +166,8 @@ MkSGateway.prototype.Send = function (type, dest_uuid, cmd, payload, additional,
 		header: {
 			message_type: type,
 			destination: dest_uuid,
-			source: "WEBFACE"
+			source: "WEBFACE",
+			direction: "request"
 		},
 		data: {
 			header: {

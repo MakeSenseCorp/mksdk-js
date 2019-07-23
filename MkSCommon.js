@@ -1,9 +1,8 @@
 function MkSCommon () {
 	self = this;
 	
-	this.MakeSenseServerUrl =
-    "http://ec2-18-236-253-240.us-west-2.compute.amazonaws.com:8080/";
-  	this.MakeSenseDomain = "ec2-18-236-253-240.us-west-2.compute.amazonaws.com";
+	this.MakeSenseServerUrl = "http://192.168.0.102:8080/";
+  	this.MakeSenseDomain = "192.168.0.102";
   	this.UserDEVKey = "ac6de837-7863-72a9-c789-a0aae7e9d93e" || localStorage.getItem("key");
   	this.UserId = 1 || localStorage.getItem("userId");
 	
@@ -11,11 +10,31 @@ function MkSCommon () {
 }
 
 MkSCommon.prototype.AjaxPostRequest = function (url, request, data_type, data, callback) {
+	console.log("MkSCommon", url, request, data_type, data);
 	$.ajax({
 		url: url + request,
 		type: "POST",
 		dataType: data_type,
 		data: data,
+		async: true,
+		success: function (response) {
+			callback(response);
+		},
+		error: function(xhr, error){
+			console.log("Ajax error");
+			callback({
+				error:"connection error",
+				data: ""
+			});
+		}
+	});
+}
+
+MkSCommon.prototype.AjaxGetRequest = function (url, callback) {
+	console.log("MkSCommon AjaxGetRequest", url);
+	$.ajax({
+		url: url,
+		type: "GET",
 		async: true,
 		success: function (response) {
 			callback(response);
