@@ -21,6 +21,9 @@ function MkSGateway (key) {
 	this.OnGatewayConnectedCallback			= null;
 	this.OnGatewayAdminCallback 			= null;
 	this.OnUnexpectedDataArrived 			= null;
+
+	// Events
+	this.OnNodeChangeEvent					= null
 	
 	// Monitoring
 	this.CallbacksMonitorId	= 0;
@@ -132,9 +135,15 @@ MkSGateway.prototype.Connect = function (callback) {
 						self.OnGatewayConnectedCallback(jsonData);
 					}
 				} else {
-					console.log('[ERROR] Unexpected identifier', jsonData.piggybag.identifier);
-					if (self.OnUnexpectedDataArrived) {
-						self.OnUnexpectedDataArrived(jsonData);
+					if (jsonData.piggybag.identifier == -1) {
+						if (null != self.OnNodeChangeEvent) {
+							self.OnNodeChangeEvent(jsonData);
+						}
+					} else {
+						console.log('[ERROR] Unexpected identifier', jsonData.piggybag.identifier);
+						if (self.OnUnexpectedDataArrived) {
+							self.OnUnexpectedDataArrived(jsonData);
+						}
 					}
 				}
 			}

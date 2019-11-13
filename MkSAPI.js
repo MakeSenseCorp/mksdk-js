@@ -46,6 +46,10 @@ MkSAPI.prototype.SendCustomCommand = function (uuid, command, payload, callback)
 	this.Gateway.Send("DIRECT", uuid, command, payload, "", callback);
 }
 
+MkSAPI.prototype.RegisterOnNodeChange = function (uuid, callback) {
+	this.Gateway.Send("DIRECT", uuid, "register_on_node_change", {"item_type":2}, "", callback);
+}
+
 MkSAPI.prototype.SetGlobalGatewayIP = function (ip) {
 	MkSGlobal.MakeSenseDomain = ip;
 }
