@@ -94,7 +94,7 @@ MkSGateway.prototype.Connect = function (callback) {
 	var self = this;
 	
 	if ("DISCONN" == this.WSState) {
-		this.WS = new WebSocket(this.WSServerFullURl);
+		this.WS = new WebSocket(this.WSServerFullURl, ['echo-protocol']);
 		this.WS.onopen = function () {
 			var handshakeMsg = {
 				header: {
@@ -114,40 +114,35 @@ MkSGateway.prototype.Connect = function (callback) {
 		};
 		
 		this.WS.onmessage = function (event) {
-			console.log(event.data);
 			var jsonData = JSON.parse(event.data);
-
-			if (jsonData.header.message_type == "HANDSHAKE") {
-				console.log("WS Connection echo recieved ...");
+			
+			if ("GATEWAY" == jsonData.header.source) {
+				console.log(jsonData);
+				if (self.OnGatewayAdminCallback) {
+					self.OnGatewayAdminCallback(jsonData.data);
+				}
 			} else {
-				if ("GATEWAY" == jsonData.header.source) {
-					console.log(jsonData);
-					if (self.OnGatewayAdminCallback) {
-						self.OnGatewayAdminCallback(jsonData.data);
+				console.log("[#2] Identifier #", jsonData.piggybag.identifier, "recieved.", jsonData.data.header.command);
+				
+				if (self.Callbacks[jsonData.piggybag.identifier]) {
+					handler = self.Callbacks[jsonData.piggybag.identifier];
+					handler.callback(jsonData, {error: "none"});
+					
+					console.log("[#2] Delete Identifier #", jsonData.piggybag.identifier);
+					delete self.Callbacks[jsonData.piggybag.identifier];
+
+					if (null != self.OnGatewayConnectedCallback) {
+						self.OnGatewayConnectedCallback(jsonData);
 					}
 				} else {
-					console.log("[#2] Identifier #", jsonData.piggybag.identifier, "recieved.", jsonData.data.header.command);
-					
-					if (self.Callbacks[jsonData.piggybag.identifier]) {
-						handler = self.Callbacks[jsonData.piggybag.identifier];
-						handler.callback(jsonData, {error: "none"});
-						
-						console.log("[#2] Delete Identifier #", jsonData.piggybag.identifier);
-						delete self.Callbacks[jsonData.piggybag.identifier];
-	
-						if (null != self.OnGatewayConnectedCallback) {
-							self.OnGatewayConnectedCallback(jsonData);
+					if (jsonData.piggybag.identifier == -1) {
+						if (null != self.OnNodeChangeEvent) {
+							self.OnNodeChangeEvent(jsonData);
 						}
 					} else {
-						if (jsonData.piggybag.identifier == -1) {
-							if (null != self.OnNodeChangeEvent) {
-								self.OnNodeChangeEvent(jsonData);
-							}
-						} else {
-							console.log('[ERROR] Unexpected identifier', jsonData.piggybag.identifier);
-							if (self.OnUnexpectedDataArrived) {
-								self.OnUnexpectedDataArrived(jsonData);
-							}
+						console.log('[ERROR] Unexpected identifier', jsonData.piggybag.identifier);
+						if (self.OnUnexpectedDataArrived) {
+							self.OnUnexpectedDataArrived(jsonData);
 						}
 					}
 				}
