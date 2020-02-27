@@ -100,7 +100,9 @@ MkSGateway.prototype.Connect = function (callback) {
 				header: {
 					message_type: 'HANDSHAKE'
 				},
-				key: self.Key
+				user: {
+					key: self.Key
+				}
 			};
 			console.log('Connected to Gateway ... Sending handshake ...', handshakeMsg);
 			self.WS.send(JSON.stringify(handshakeMsg));
