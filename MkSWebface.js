@@ -32,6 +32,7 @@ MkSWebface.prototype.GetUserNodeList = function (callback) {
 	};
 	console.log(RequestData);
 	MkSGlobal.AjaxPostRequest(this.RestAPIFullUrl, "/api/get/nodes", "json", RequestData, function(response) {
+		console.log("get_user_node_list", response);
 		callback(response);
 	});
 }

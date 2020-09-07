@@ -1,7 +1,7 @@
 function MkSCommon () {
 	self = this;
 	
-	this.MakeSenseDomain = "10.0.0.14";
+	this.MakeSenseDomain = "10.0.0.10";
 	this.MakeSenseServerUrl = "http://" + this.MakeSenseDomain + ":8080/";
   	
   	this.UserDEVKey = "ac6de837-7863-72a9-c789-a0aae7e9d93e" || localStorage.getItem("key");
@@ -63,6 +63,30 @@ MkSCommon.prototype.CheckUserLocalStorage = function () {
 		return true;
 	}
 }
+
+MkSCommon.prototype.ConvertHEXtoString = function(hexx) {
+	var hex = hexx.toString();//force conversion
+	var str = '';
+	for (var i = 0; (i < hex.length && hex.substr(i, 2) !== '00'); i += 2) {
+		str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+	}
+	return str;
+}
+
+MkSCommon.prototype.ExecuteJS = function(content) {
+	var oScript 	= document.createElement("script");
+	var oScriptText = document.createTextNode(content);
+	oScript.appendChild(oScriptText);
+	document.body.appendChild(oScript);
+}
+
+MkSCommon.prototype.AppendCSS = function(content) {
+	var styleSheet = document.createElement("style");
+	styleSheet.type = "text/css";
+	styleSheet.innerText = content;
+	document.head.appendChild(styleSheet);
+}
+
 
 var MkSCommonBuilder = (function () {
 	var Instance;

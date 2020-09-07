@@ -95,6 +95,7 @@ MkSGateway.prototype.Connect = function (callback) {
 	
 	if ("DISCONN" == this.WSState) {
 		this.WS = new WebSocket(this.WSServerFullURl, ['echo-protocol']);
+		// TODO - Send UserKey in headers.
 		this.WS.onopen = function () {
 			var handshakeMsg = {
 				header: {
@@ -193,7 +194,8 @@ MkSGateway.prototype.Send = function (type, dest_uuid, cmd, payload, additional,
 		additional: additional,
 		piggybag: {
 			identifier: this.PacketCounter
-		}
+		},
+		stamping: []
 	}
 	
 	this.Callbacks[this.PacketCounter] = { 
