@@ -6,13 +6,13 @@ function MksBasicModal () {
 			<div class="modal-dialog modal-lg" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
-						<h5 class="modal-title" id="id-basic-modalLabel">Title</h5>
+						<h5 class="modal-title" id="id-basic-modalLabel">[TITLE]</h5>
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 						</button>
 					</div>
-					<div id="id_basic_modal_content" class="modal-body"> </div>
-					<div id="id_basic_modal_footer" class="modal-footer"></div>
+					<div id="id_basic_modal_content" class="modal-body">[CONTENT]</div>
+					<div id="id_basic_modal_footer" class="modal-footer">[FOOTER]</div>
 				</div>
 			</div>
 		</div>
@@ -29,27 +29,31 @@ function MksBasicModal () {
 	return this;
 }
 
-MksBasicModal.prototype.Populate = function (size) {
+MksBasicModal.prototype.Build = function (modal_size) {
 	var obj = document.getElementById("id-basic-modal");
-	if (obj === undefined) {
+	if (obj !== undefined && obj !== null) {
 		return;
 	}
 	
+	// Update modal UI objects
 	var html = this.BasicModalContainer;
-	switch(size) {
+	switch(modal_size) {
 		case "lg": {
-			html = html.split("[SIZE]").join(bd-example-modal-lg);
+			html = html.split("[SIZE]").join("bd-example-modal-lg");
 		}
 		break;
 		default: {
-			html = html.split("[SIZE]").join(bd-example-modal-lg);
+			html = html.split("[SIZE]").join("bd-example-modal-lg");
 		}
 		break;
 	}
-	
+	html = html.split("[CONTENT]").join(this.BasicModalContent);
+	html = html.split("[FOOTER]").join(this.BasicModalFooter);
+	html = html.split("[TITLE]").join(this.BasicTitle);
+	// Create modal in DOM
 	var elem = document.createElement('div');
 	elem.innerHTML = html;
-	document.body.appendChild(elem);
+	document.body.appendChild(elem);	
 }
 
 MksBasicModal.prototype.SetTitle = function (title) {
@@ -64,11 +68,11 @@ MksBasicModal.prototype.SetFooter = function (html) {
 	this.BasicModalFooter = html;
 }
 
-MksBasicModal.prototype.Show = function (html) {
+MksBasicModal.prototype.Show = function () {
 	$('#id-basic-modal').modal('show');
 }
 
-MksBasicModal.prototype.Hide = function (html) {
+MksBasicModal.prototype.Hide = function () {
 	$('#id-basic-modal').modal('hide');
 }
 

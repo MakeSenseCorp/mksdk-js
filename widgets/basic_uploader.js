@@ -1,72 +1,166 @@
 function MksBasicUploader () {
-	self = this;
+	self 					= this;
+	this.API 				= null;
+	this.FileName 			= "";
+	this.FileSize 			= 0;
+	this.Reader 			= new FileReader();
+	this.OnUploadCompete 	= None;
 	
 	this.BasicUploaderContainer = `
-		<ul class="nav nav-tabs" id="myTab" role="tablist">
-			<li class="nav-item waves-effect waves-light">
-				<a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="false">File</a>
-			</li>
-			<li class="nav-item waves-effect waves-light">
-				<a class="nav-link active" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="true">Git</a>
-			</li>
-		</ul>
-		<div class="tab-content" id="myTabContent">
-			<div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
-				<div class="row">
-					<div class="col-lg-12">
-						<div class="card">
-							<div class="card-body">
-								<form>
-									<div class="form-group">
-										<label for="id_package_path">Please select package (ZIP File)</label>
-										<input type="file" class="form-control-file" id="id_package_path">
-									</div>
-								</form>
-								<button type="button" id="id_install_button" class="btn btn-primary" onclick="OnInstallClick();">Install</button>
-							</div>
-						</div>
+		<div class="card" id="id-uploader-object">
+			<div class="card-body">
+				<form>
+					<div class="form-group">
+						<label for="id_uploader_package_path">Please select package ([FILE_TYPE] File)</label>
+						<input type="file" class="form-control-file" id="id_uploader_package_path">
 					</div>
-				</div>
-			</div>
-			<div class="tab-pane fade active show" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-				<div class="row">
-					<div class="col-lg-12">
-						<div class="card">
-							<div class="card-body">
-								<h6 class="d-flex justify-content-between align-items-center mb-3">
-									<span class="text-muted">Nodes List</span>
-									<span class="badge badge-secondary badge-pill" id="id_git_packages_count">0</span>
-								</h6>
-								<div id="id_git_packages"></div>
-							</div>
-						</div>
-					</div>
-				</div>
+				</form>
+				<button type="button" id="id_uploader_action" class="btn btn-primary" onclick="MksBasicUploaderBuilder.GetInstance().Upload();">[ACTION]</button>
 			</div>
 		</div>
-		<div class="row d-none" id="id_progress">
+		<div class="row d-none" id="id_uploader_progress">
 			<div class="col-lg-12">
 				<div class="card">
 					<div class="card-body">
 						<div class="progress">
-							<div id="id_progress_bar" class="progress-bar progress-bar-striped" style="min-width: 20px;"></div>
+							<div id="id_uploader_progress_bar" class="progress-bar progress-bar-striped" style="min-width: 20px;"></div>
 						</div>
 						<div>
-							<span class="text-muted" id="id_progress_item">0%</span>
+							<span class="text-muted" id="id_uploader_progress_item">0%</span>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	`;
+
+	this.Reader.onload = function(e) {
+		var data    		= reader.result;
+		var MAX_CHUNK_SIZE  = 4096;
+		var buffer  		= new Uint8Array(data);
+		var chunks  		= parseInt(fileSize / MAX_CHUNK_SIZE);
+
+		// console.log(buffer, fileSize / MAX_CHUNK_SIZE, chunks);
+		if (fileSize % MAX_CHUNK_SIZE != 0) {
+			// Append last chunk.
+			chunks++;
+		}
+
+		start = 0;
+		end   = 0;
+		percCunck = parseInt(100 / chunks);
+		for (i = 0; i < chunks; i++) {
+			if ( (fileSize - i * MAX_CHUNK_SIZE) < MAX_CHUNK_SIZE ) {
+				// We are at last packet
+				start = i * MAX_CHUNK_SIZE;
+				end   = fileSize;
+			} else {
+				start = i * MAX_CHUNK_SIZE;
+				end   = start + MAX_CHUNK_SIZE;
+			}
+
+			if (start < end) {
+				var arrayData = buffer.subarray(start, end);
+				var dataToSend = [];
+				for (idx = 0; idx < arrayData.length; idx++) {
+					dataToSend.push(arrayData[idx]);
+				}
+
+				// console.log("send chunk", i+1, start, end, fileSize, dataToSend.length);
+				var payload = {
+					upload: {
+						action: "upload",
+						file: fileName,
+						size: fileSize,
+						content: dataToSend,
+						chunk: i+1,
+						chunk_size: (end - start),
+						chunks: chunks
+					}
+				}
+
+				// console.log(payload);
+				this.API.UploadFileContent(NodeUUID, payload, function(res) {
+					if (res) {
+						status = res.data.payload.status;
+						if (status == "accept") {
+							console.log("Uploaded " + res.data.payload.chunk + " " + percCunck * res.data.payload.chunk);
+						}
+					}
+				});
+			}
+		}
+	}
 	
 	return this;
 }
 
-MksBasicModal.prototype.Populate = function (obj) {
-	obj.innerHTML = this.BasicUploaderContainer;
+MksBasicUploader.prototype.Build = function (api) {
+	this.API = api;
+}
+
+MksBasicUploader.prototype.Build = function (obj, action_title) {
+	var uploaderObj = document.getElementById("id-uploader-object");
+	if (uploaderObj !== undefined && uploaderObj !== null) {
+		uploaderObj.parentNode.removeChild(uploaderObj);
+	}
+
+	var html = this.BasicUploaderContainer;
+	html = html.split("[FILE_TYPE]").join("ZIP");
+	html = html.split("[ACTION]").join(action_title);
+	obj.innerHTML = html;
 }
 
 MksBasicUploader.prototype.Upload = function () {
-	
+	var fileObj = document.getElementById("id_uploader_package_path");
+	// Show progress bar
+	document.getElementById("id_uploader_progress").classList.remove("d-none");
+	this.ReadImage(fileObj.files[0]);
 }
+
+MksBasicUploader.prototype.UpdateProgress = function (data) {
+	$("#id_uploader_progress_bar").css("width", data.precentage).text(data.precentage);
+	document.getElementById("id_uploader_progress_item").innerHTML =  data.message;
+	switch(data.status) {
+		case "inprogress":
+			break;
+		case "error":
+			break;
+		case "done":
+			if (this.OnUploadCompete !== null) {
+				this.OnUploadCompete();
+			}
+			break;
+	}
+}
+
+MksBasicUploader.prototype.ReadImage = function (file) {
+	// Check if the file is zip file.
+	if (file.type && file.type.indexOf('zip') === -1) {
+		console.log('File is not an image.', file.type, file);
+		return;
+	}
+
+	this.FileName = file.name;
+	this.FileSize = file.size;
+	this.Reader.readAsArrayBuffer(file);
+}
+
+var MksBasicUploaderBuilder = (function () {
+	var Instance;
+
+	function CreateInstance () {
+		var obj = new MksBasicUploader();
+		return obj;
+	}
+
+	return {
+		GetInstance: function () {
+			if (!Instance) {
+				Instance = CreateInstance();
+			}
+
+			return Instance;
+		}
+	};
+})();
