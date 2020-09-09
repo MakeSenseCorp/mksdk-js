@@ -56,6 +56,14 @@ MksBasicModal.prototype.Build = function (modal_size) {
 	document.body.appendChild(elem);	
 }
 
+MksBasicModal.prototype.Remove = function () {
+	var obj = document.getElementById("id-basic-modal");
+	if (obj !== null) {
+		this.Hide();
+		obj.parentNode.removeChild(obj);
+	}
+}
+
 MksBasicModal.prototype.SetTitle = function (title) {
 	this.BasicTitle = title;
 }

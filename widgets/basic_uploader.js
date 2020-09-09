@@ -4,7 +4,7 @@ function MksBasicUploader () {
 	this.FileName 			= "";
 	this.FileSize 			= 0;
 	this.Reader 			= new FileReader();
-	this.OnUploadCompete 	= None;
+	this.OnUploadCompete 	= null;
 	
 	this.BasicUploaderContainer = `
 		<div class="card" id="id-uploader-object">
@@ -35,13 +35,15 @@ function MksBasicUploader () {
 	`;
 
 	this.Reader.onload = function(e) {
-		var data    		= reader.result;
+		self = MksBasicUploaderBuilder.GetInstance();
+		console.log(self.FileName, self.FileSize);
+
+		var data    		= self.Reader.result;
 		var MAX_CHUNK_SIZE  = 4096;
 		var buffer  		= new Uint8Array(data);
-		var chunks  		= parseInt(fileSize / MAX_CHUNK_SIZE);
+		var chunks  		= parseInt(self.FileSize / MAX_CHUNK_SIZE);
 
-		// console.log(buffer, fileSize / MAX_CHUNK_SIZE, chunks);
-		if (fileSize % MAX_CHUNK_SIZE != 0) {
+		if (self.FileSize % MAX_CHUNK_SIZE != 0) {
 			// Append last chunk.
 			chunks++;
 		}
@@ -50,10 +52,10 @@ function MksBasicUploader () {
 		end   = 0;
 		percCunck = parseInt(100 / chunks);
 		for (i = 0; i < chunks; i++) {
-			if ( (fileSize - i * MAX_CHUNK_SIZE) < MAX_CHUNK_SIZE ) {
+			if ( (self.FileSize - i * MAX_CHUNK_SIZE) < MAX_CHUNK_SIZE ) {
 				// We are at last packet
 				start = i * MAX_CHUNK_SIZE;
-				end   = fileSize;
+				end   = self.FileSize;
 			} else {
 				start = i * MAX_CHUNK_SIZE;
 				end   = start + MAX_CHUNK_SIZE;
@@ -66,12 +68,11 @@ function MksBasicUploader () {
 					dataToSend.push(arrayData[idx]);
 				}
 
-				// console.log("send chunk", i+1, start, end, fileSize, dataToSend.length);
 				var payload = {
 					upload: {
 						action: "upload",
-						file: fileName,
-						size: fileSize,
+						file: self.FileName,
+						size: self.FileSize,
 						content: dataToSend,
 						chunk: i+1,
 						chunk_size: (end - start),
@@ -79,8 +80,7 @@ function MksBasicUploader () {
 					}
 				}
 
-				// console.log(payload);
-				this.API.UploadFileContent(NodeUUID, payload, function(res) {
+				self.API.UploadFileContent(NodeUUID, payload, function(res) {
 					if (res) {
 						status = res.data.payload.status;
 						if (status == "accept") {
@@ -95,7 +95,7 @@ function MksBasicUploader () {
 	return this;
 }
 
-MksBasicUploader.prototype.Build = function (api) {
+MksBasicUploader.prototype.SetAPI = function (api) {
 	this.API = api;
 }
 
@@ -128,6 +128,7 @@ MksBasicUploader.prototype.UpdateProgress = function (data) {
 			break;
 		case "done":
 			if (this.OnUploadCompete !== null) {
+				// document.getElementById("id_uploader_progress").classList.add("d-none");
 				this.OnUploadCompete();
 			}
 			break;
