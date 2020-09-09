@@ -76,6 +76,20 @@ MksBasicModal.prototype.SetFooter = function (html) {
 	this.BasicModalFooter = html;
 }
 
+MksBasicModal.prototype.UpdateFooter = function (html) {
+	this.BasicModalFooter = html;
+	document.getElementById("id_basic_modal_content").innerHTML = this.BasicModalFooter;
+}
+
+MksBasicModal.prototype.SetDefaultFooter = function () {
+	this.BasicModalFooter = `
+		<h6 class="d-flex justify-content-between align-items-center mb-3">
+			<span class="text-muted"><a href="#" onclick="$('#id-basic-modal').modal('hide');">Close</a></span>
+		</h6>
+	`;
+	document.getElementById("id_basic_modal_footer").innerHTML = this.BasicModalFooter;
+}
+
 MksBasicModal.prototype.Show = function () {
 	$('#id-basic-modal').modal('show');
 }

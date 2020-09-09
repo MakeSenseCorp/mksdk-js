@@ -5,6 +5,8 @@ function MksBasicUploader () {
 	this.FileSize 			= 0;
 	this.Reader 			= new FileReader();
 	this.OnUploadCompete 	= null;
+	this.WithModal			= false;
+	this.Modal 				= null;
 	
 	this.BasicUploaderContainer = `
 		<div class="card" id="id-uploader-object">
@@ -99,6 +101,11 @@ MksBasicUploader.prototype.SetAPI = function (api) {
 	this.API = api;
 }
 
+MksBasicUploader.prototype.Show = function () {
+	this.Modal.Build("lg");
+	this.Modal.Show();
+}
+
 MksBasicUploader.prototype.Build = function (obj, action_title) {
 	var uploaderObj = document.getElementById("id-uploader-object");
 	if (uploaderObj !== undefined && uploaderObj !== null) {
@@ -108,7 +115,15 @@ MksBasicUploader.prototype.Build = function (obj, action_title) {
 	var html = this.BasicUploaderContainer;
 	html = html.split("[FILE_TYPE]").join("ZIP");
 	html = html.split("[ACTION]").join(action_title);
-	obj.innerHTML = html;
+
+	if (this.WithModal == true) {
+		this.Modal.Remove();
+		this.Modal = new MksBasicModal();
+		this.Modal.SetTitle("Upload File");
+		this.Modal.SetContent(html);
+	} else {
+		obj.innerHTML = html;
+	}
 }
 
 MksBasicUploader.prototype.Upload = function () {
@@ -145,6 +160,10 @@ MksBasicUploader.prototype.ReadImage = function (file) {
 	this.FileName = file.name;
 	this.FileSize = file.size;
 	this.Reader.readAsArrayBuffer(file);
+}
+
+MksBasicUploader.prototype.SetModal = function (enabled) {
+	this.WithModal = enabled;
 }
 
 var MksBasicUploaderBuilder = (function () {
