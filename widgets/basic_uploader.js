@@ -7,6 +7,7 @@ function MksBasicUploader () {
 	this.OnUploadCompete 	= null;
 	this.WithModal			= false;
 	this.Modal 				= null;
+	this.FileType			= "";
 	
 	this.BasicUploaderContainer = `
 		<div class="card" id="id-uploader-object">
@@ -106,6 +107,14 @@ MksBasicUploader.prototype.Show = function () {
 	this.Modal.Show();
 }
 
+MksBasicUploader.prototype.Hide = function () {
+	this.Modal.Hide();
+}
+
+MksBasicUploader.prototype.SetFileType = function (type) {
+	this.FileType = type;
+}
+
 MksBasicUploader.prototype.Build = function (obj, action_title) {
 	var uploaderObj = document.getElementById("id-uploader-object");
 	if (uploaderObj !== undefined && uploaderObj !== null) {
@@ -113,11 +122,14 @@ MksBasicUploader.prototype.Build = function (obj, action_title) {
 	}
 
 	var html = this.BasicUploaderContainer;
-	html = html.split("[FILE_TYPE]").join("ZIP");
+	html = html.split("[FILE_TYPE]").join(this.FileType);
 	html = html.split("[ACTION]").join(action_title);
+	console.log(html);
 
 	if (this.WithModal == true) {
-		this.Modal.Remove();
+		if (this.Modal !== null) {
+			this.Modal.Remove();
+		}
 		this.Modal = new MksBasicModal();
 		this.Modal.SetTitle("Upload File");
 		this.Modal.SetContent(html);
@@ -152,8 +164,8 @@ MksBasicUploader.prototype.UpdateProgress = function (data) {
 
 MksBasicUploader.prototype.ReadImage = function (file) {
 	// Check if the file is zip file.
-	if (file.type && file.type.indexOf('zip') === -1) {
-		console.log('File is not an image.', file.type, file);
+	if (file.type && file.type.indexOf(this.FileType) === -1) {
+		document.getElementById("id_uploader_progress_item").innerHTML = "Incorrect file type... Upload " + this.FileType + " only.";
 		return;
 	}
 
