@@ -22,6 +22,10 @@ MkSAPI.prototype.ConnectGateway = function (callback) {
 	}
 }
 
+MkSAPI.prototype.ConnectLocalWS = function (callback) {
+	
+}
+
 MkSAPI.prototype.GetNodeInfo = function (uuid, callback) {
 	this.Gateway.Send("DIRECT", uuid, "get_node_info", "", "", callback);
 }
@@ -52,6 +56,14 @@ MkSAPI.prototype.RegisterOnNodeChange = function (uuid, callback) {
 
 MkSAPI.prototype.SetGlobalGatewayIP = function (ip) {
 	MkSGlobal.MakeSenseDomain = ip;
+}
+
+MkSAPI.prototype.SetLocalWebsockIP = function (ip) {
+	MkSGlobal.MakeSenseLocalWebsockIP = ip;
+}
+
+MkSAPI.prototype.SetLocalWebsockPort = function (port) {
+	MkSGlobal.MakeSenseLocalWebsockPort = port;
 }
 
 var MkSAPIBuilder = (function () {
