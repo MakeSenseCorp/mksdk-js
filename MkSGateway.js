@@ -134,9 +134,11 @@ MkSGateway.prototype.Connect = function (callback) {
 					console.log("[#2] Delete Identifier #", jsonData.piggybag.identifier);
 					delete self.Callbacks[jsonData.piggybag.identifier];
 
+					/*
 					if (null != self.OnGatewayConnectedCallback) {
 						self.OnGatewayConnectedCallback(jsonData);
 					}
+					*/
 				} else {
 					if (jsonData.piggybag.identifier == -1) {
 						if (null != self.OnNodeChangeEvent) {
