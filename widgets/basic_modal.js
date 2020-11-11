@@ -87,7 +87,10 @@ MksBasicModal.prototype.SetDefaultFooter = function () {
 			<span class="text-muted"><a href="#" onclick="$('#id-basic-modal').modal('hide');">Close</a></span>
 		</h6>
 	`;
-	document.getElementById("id_basic_modal_footer").innerHTML = this.BasicModalFooter;
+	var obj = document.getElementById("id_basic_modal_footer");
+	if (obj !== null) {
+		obj.innerHTML = this.BasicModalFooter;
+	}
 }
 
 MksBasicModal.prototype.Show = function () {
