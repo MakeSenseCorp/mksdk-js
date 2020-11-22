@@ -87,6 +87,7 @@ MksBasicModal.prototype.SetDefaultFooter = function () {
 			<span class="text-muted"><a href="#" onclick="$('#id-basic-modal').modal('hide');">Close</a></span>
 		</h6>
 	`;
+
 	var obj = document.getElementById("id_basic_modal_footer");
 	if (obj !== null) {
 		obj.innerHTML = this.BasicModalFooter;
