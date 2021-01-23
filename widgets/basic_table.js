@@ -6,7 +6,7 @@ function MksBasicTable () {
     this.Body           = "";
     this.Content        = `
         <div class="table-responsive">
-            <table class="table table-sm table-striped table-hover">
+            <table class="table table-sm [STRIPED] table-hover">
                 <thead>
                     <tr>
                         [HEAD]
@@ -18,8 +18,13 @@ function MksBasicTable () {
             </table>
         </div>
     `;
+	this.Striped = false
 	
 	return this;
+}
+
+MksBasicTable.prototype.SetStriped = function () {
+	this.Striped = true;
 }
 
 MksBasicTable.prototype.SetSchema = function (schema) {
@@ -43,6 +48,13 @@ MksBasicTable.prototype.SetData = function (data) {
 MksBasicTable.prototype.Build = function (obj) {
     this.WorkingObject = obj;
     var html = this.Content;
+	
+	if (this.Striped == true) {
+		html = html.split("[STRIPED]").join("table-striped");
+	} else {
+		html = html.split("[STRIPED]").join('');
+	}
+	
     html = html.split("[HEAD]").join(this.Head);
     html = html.split("[BODY]").join(this.Body);
     obj.innerHTML = html;
