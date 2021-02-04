@@ -2,8 +2,8 @@ function MksBasicModal () {
 	self = this;
 	
 	this.BasicModalContainer = `
-		<div class="modal fade [SIZE]" id="id-basic-modal" tabindex="-1" role="dialog" aria-labelledby="id-basic-modalLabel" aria-hidden="true">
-			<div class="modal-dialog modal-lg" role="document">
+		<div class="modal fade bd-example-modal-[SIZE]" id="id-basic-modal" tabindex="-1" role="dialog" aria-labelledby="id-basic-modalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-[SIZE]" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
 						<h5 class="modal-title" id="id-basic-modalLabel">[TITLE]</h5>
@@ -37,16 +37,7 @@ MksBasicModal.prototype.Build = function (modal_size) {
 	
 	// Update modal UI objects
 	var html = this.BasicModalContainer;
-	switch(modal_size) {
-		case "lg": {
-			html = html.split("[SIZE]").join("bd-example-modal-lg");
-		}
-		break;
-		default: {
-			html = html.split("[SIZE]").join("bd-example-modal-lg");
-		}
-		break;
-	}
+	html = html.split("[SIZE]").join(modal_size);
 	html = html.split("[CONTENT]").join(this.BasicModalContent);
 	html = html.split("[FOOTER]").join(this.BasicModalFooter);
 	html = html.split("[TITLE]").join(this.BasicTitle);
