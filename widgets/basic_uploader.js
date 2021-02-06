@@ -19,18 +19,13 @@ function MksBasicUploader () {
 					</div>
 				</form>
 				<button type="button" id="id_uploader_action" class="btn btn-primary" onclick="MksBasicUploaderBuilder.GetInstance().Upload();">[ACTION]</button>
-			</div>
-		</div>
-		<div class="row d-none" id="id_uploader_progress">
-			<div class="col-lg-12">
-				<div class="card">
-					<div class="card-body">
-						<div class="progress">
-							<div id="id_uploader_progress_bar" class="progress-bar progress-bar-striped" style="min-width: 20px;"></div>
-						</div>
-						<div>
-							<span class="text-muted" id="id_uploader_progress_item">0%</span>
-						</div>
+				<div class="d-none" id="id_uploader_progress">
+					<br/>
+					<div class="progress">
+						<div id="id_uploader_progress_bar" class="progress-bar progress-bar-striped" style="min-width: 20px;"></div>
+					</div>
+					<div>
+						<span class="text-muted" id="id_uploader_progress_item">0%</span>
 					</div>
 				</div>
 			</div>
@@ -124,7 +119,7 @@ MksBasicUploader.prototype.Build = function (obj, action_title) {
 	var html = this.BasicUploaderContainer;
 	html = html.split("[FILE_TYPE]").join(this.FileType);
 	html = html.split("[ACTION]").join(action_title);
-	console.log(html);
+	//console.log(html);
 
 	if (this.WithModal == true) {
 		if (this.Modal !== null) {
