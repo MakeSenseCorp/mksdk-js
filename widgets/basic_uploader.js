@@ -7,7 +7,7 @@ function MksBasicUploader () {
 	this.OnUploadCompete 	= null;
 	this.WithModal			= false;
 	this.Modal 				= null;
-	this.FileType			= "";
+	this.FileType			= [];
 	
 	this.BasicUploaderContainer = `
 		<div class="card" id="id-uploader-object">
@@ -151,15 +151,23 @@ MksBasicUploader.prototype.UpdateProgress = function (data) {
 		case "done":
 			if (this.OnUploadCompete !== null) {
 				// document.getElementById("id_uploader_progress").classList.add("d-none");
-				this.OnUploadCompete();
+				this.OnUploadCompete(data.file);
 			}
 			break;
 	}
 }
 
 MksBasicUploader.prototype.ReadImage = function (file) {
+	var fileTypeCorrect = false;
 	// Check if the file is zip file.
-	if (file.type && file.type.indexOf(this.FileType) === -1) {
+	for (index in this.FileType) {
+		item = this.FileType[index];
+		if (file.type && file.type.indexOf(item) !== -1) {
+			fileTypeCorrect = true;
+		}
+	}
+
+	if (fileTypeCorrect == false) {
 		document.getElementById("id_uploader_progress_item").innerHTML = "Incorrect file type... Upload " + this.FileType + " only.";
 		return;
 	}
