@@ -6,6 +6,7 @@ function MkSAPI (key) {
 	this.Webface 	= MkSWebfaceBuilder.GetInstance();
 	this.Database 	= null;
 	this.NodeWS 	= null
+	this.UUID 		= "";
 
 	this.OnNodeChangeCallback = null;
 	this.IsLocalWSEnabled = false;
@@ -113,10 +114,10 @@ MkSAPI.prototype.CallbacksMonitor = function () {
 
 MkSAPI.prototype.SendPacket = function (type, dest_uuid, cmd, payload, additional, callback) {
 	if (this.IsLocalWSEnabled == false || dest_uuid != this.NodeWS.UUID) {
-		console.log("GATEWAY SEND");
+		// console.log("GATEWAY SEND");
 		this.Gateway.Send(type, dest_uuid, cmd, payload, additional, callback);
 	} else {
-		console.log("LOCAL WEBSOCKET SEND");
+		// console.log("LOCAL WEBSOCKET SEND");
 		if ("" == additional) {
 			additional = {};
 		}
@@ -211,6 +212,21 @@ MkSAPI.prototype.SetLocalWebsockIP = function (ip) {
 MkSAPI.prototype.SetLocalWebsockPort = function (port) {
 	MkSGlobal.MakeSenseLocalWebsockPort = port;
 }
+
+MkSAPI.prototype.SetNodeUUID = function (uuid) {
+	this.UUID = uuid;
+}
+
+MkSAPI.prototype.LoadModule = function(name) {
+	this.GetFileContent(this.UUID, {
+		"file_path": "modules/js/"+name
+	}, function(res) {
+		var payload = res.data.payload;
+		var js = MkSGlobal.ConvertHEXtoString(payload.content);
+		// Inject into DOM
+		MkSGlobal.ExecuteJS(js);
+	});
+}	
 
 var MkSAPIBuilder = (function () {
 	var Instance;
