@@ -8,6 +8,7 @@ function MkSAPI (key) {
 	this.NodeWS 	= null
 	this.UUID 		= "";
 
+	this.ModulesLoadedCallback = null;
 	this.OnNodeChangeCallback = null;
 	this.IsLocalWSEnabled = false;
 
@@ -218,6 +219,7 @@ MkSAPI.prototype.SetNodeUUID = function (uuid) {
 }
 
 MkSAPI.prototype.LoadModule = function(name) {
+	var self = this;
 	this.GetFileContent(this.UUID, {
 		"file_path": "modules/js/"+name
 	}, function(res) {
@@ -225,6 +227,13 @@ MkSAPI.prototype.LoadModule = function(name) {
 		var js = MkSGlobal.ConvertHEXtoString(payload.content);
 		// Inject into DOM
 		MkSGlobal.ExecuteJS(js);
+		window.MKSModulesCount--;
+		console.log(window.MKSModulesCount);
+		if (window.MKSModulesCount == 0) {
+			if (self.ModulesLoadedCallback != null) {
+				self.ModulesLoadedCallback();
+			}
+		}
 	});
 }	
 
