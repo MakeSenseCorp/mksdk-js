@@ -59,7 +59,7 @@ MkSGateway.prototype.WSWatchdog = function () {
 MkSGateway.prototype.CallbacksMonitor = function () {
 	// console.log("(CallbacksMonitor)");
 	if (0 == Object.keys(this.Callbacks).length) {
-		console.log("(CallbacksMonitor) Callbacks list empty");
+		// console.log("(CallbacksMonitor) Callbacks list empty");
 		clearInterval(this.CallbacksMonitorId);
 		this.CallbacksMonitorId	= 0;
 	} else {
@@ -72,7 +72,7 @@ MkSGateway.prototype.CallbacksMonitor = function () {
 						item.callback(null, {error: "timeout"});
 					}
 					catch (e) {
-						console.log("[ERROR] (CallbacksMonitor)", e.message);
+						console.log("[ERROR] (CallbacksMonitor)", item, e.message);
 					}
 					
 					delete this.Callbacks[key];
@@ -203,7 +203,7 @@ MkSGateway.prototype.Send = function (type, dest_uuid, cmd, payload, additional,
 	this.Callbacks[this.PacketCounter] = { 
 											callback: callback,
 											timeout_counter: 0,
-											timeout: 5
+											timeout: 10
 										 };
 	// console.log("[#2] Identifier #", this.PacketCounter, "sent.", cmd);
 

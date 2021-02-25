@@ -86,7 +86,7 @@ MkSAPI.prototype.ConnectLocalWS = function (uuid, callback) {
 MkSAPI.prototype.CallbacksMonitor = function () {
 	// console.log("(CallbacksMonitor)");
 	if (0 == Object.keys(this.Callbacks).length) {
-		console.log("(CallbacksMonitor) Callbacks list empty");
+		//console.log("(CallbacksMonitor) Callbacks list empty");
 		clearInterval(this.CallbacksMonitorId);
 		this.CallbacksMonitorId	= 0;
 	} else {
@@ -154,7 +154,7 @@ MkSAPI.prototype.SendPacket = function (type, dest_uuid, cmd, payload, additiona
 		this.Callbacks[this.PacketCounter] = { 
 			callback: callback,
 			timeout_counter: 0,
-			timeout: 5
+			timeout: 10
 		 };
 
 		this.PacketCounter++;
