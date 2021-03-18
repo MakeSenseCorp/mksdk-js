@@ -1,18 +1,19 @@
-function MksBasicModal () {
+function MksBasicModal (name) {
 	self = this;
+	this.Name = name;
 	
 	this.BasicModalContainer = `
-		<div class="modal fade bd-example-modal-[SIZE]" id="id-basic-modal" tabindex="-1" role="dialog" aria-labelledby="id-basic-modalLabel" aria-hidden="true">
+		<div class="modal fade bd-example-modal-[SIZE]" id="id_basic_modal_[NAME]" tabindex="-1" role="dialog" aria-labelledby="id_m_basic_modal_[NAME]_label" aria-hidden="true">
 			<div class="modal-dialog modal-[SIZE]" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
-						<h5 class="modal-title" id="id-basic-modalLabel">[TITLE]</h5>
+						<h5 class="modal-title" id="id_m_basic_modal_[NAME]_label">[TITLE]</h5>
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 						</button>
 					</div>
-					<div id="id_basic_modal_content" class="modal-body">[CONTENT]</div>
-					<div id="id_basic_modal_footer" class="modal-footer">[FOOTER]</div>
+					<div id="id_basic_modal_[NAME]_content" class="modal-body">[CONTENT]</div>
+					<div id="id_basic_modal_[NAME]_footer" class="modal-footer">[FOOTER]</div>
 				</div>
 			</div>
 		</div>
@@ -22,7 +23,7 @@ function MksBasicModal () {
 	`;
 	this.BasicModalFooter = `
 		<h6 class="d-flex justify-content-between align-items-center mb-3">
-			<span class="text-muted"><a href="#" onclick="$('#id-basic-modal').modal('hide');">Close</a></span>
+			<span class="text-muted"><a href="#" onclick="$('#id_basic_modal_[NAME]').modal('hide');">Close</a></span>
 		</h6>
 	`;
 	
@@ -30,7 +31,7 @@ function MksBasicModal () {
 }
 
 MksBasicModal.prototype.Build = function (modal_size) {
-	var obj = document.getElementById("id-basic-modal");
+	var obj = document.getElementById("id_basic_modal_"+this.Name);
 	if (obj !== undefined && obj !== null) {
 		return;
 	}
@@ -41,6 +42,7 @@ MksBasicModal.prototype.Build = function (modal_size) {
 	html = html.split("[CONTENT]").join(this.BasicModalContent);
 	html = html.split("[FOOTER]").join(this.BasicModalFooter);
 	html = html.split("[TITLE]").join(this.BasicTitle);
+	html = html.split("[NAME]").join(this.Name);
 	// Create modal in DOM
 	var elem = document.createElement('div');
 	elem.innerHTML = html;
@@ -48,7 +50,7 @@ MksBasicModal.prototype.Build = function (modal_size) {
 }
 
 MksBasicModal.prototype.Remove = function () {
-	var obj = document.getElementById("id-basic-modal");
+	var obj = document.getElementById("id_basic_modal_"+this.Name);
 	if (obj !== null) {
 		this.Hide();
 		obj.parentNode.removeChild(obj);
@@ -69,27 +71,29 @@ MksBasicModal.prototype.SetFooter = function (html) {
 
 MksBasicModal.prototype.UpdateFooter = function (html) {
 	this.BasicModalFooter = html;
-	document.getElementById("id_basic_modal_content").innerHTML = this.BasicModalFooter;
+	document.getElementById("id_basic_modal_"+this.Name+"_content").innerHTML = this.BasicModalFooter;
 }
 
 MksBasicModal.prototype.SetDefaultFooter = function () {
 	this.BasicModalFooter = `
 		<h6 class="d-flex justify-content-between align-items-center mb-3">
-			<span class="text-muted"><a href="#" onclick="$('#id-basic-modal').modal('hide');">Close</a></span>
+			<span class="text-muted"><a href="#" onclick="$('#id_basic_modal_[NAME]').modal('hide');">Close</a></span>
 		</h6>
 	`;
 
-	var obj = document.getElementById("id_basic_modal_footer");
+	var html = this.BasicModalFooter;
+	html = html.split("[NAME]").join(this.Name);
+	var obj = document.getElementById("id_basic_modal_"+this.Name+"_footer");
 	if (obj !== null) {
-		obj.innerHTML = this.BasicModalFooter;
+		obj.innerHTML = html;
 	}
 }
 
 MksBasicModal.prototype.Show = function () {
-	$('#id-basic-modal').modal('show');
+	$('#id_basic_modal_'+this.Name).modal('show');
 }
 
 MksBasicModal.prototype.Hide = function () {
-	$('#id-basic-modal').modal('hide');
+	$('#id_basic_modal_'+this.Name).modal('hide');
 }
 

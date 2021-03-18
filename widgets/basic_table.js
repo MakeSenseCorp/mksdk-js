@@ -18,13 +18,23 @@ function MksBasicTable () {
             </table>
         </div>
     `;
-	this.Striped = false
+	this.Striped    = false;
+    this.RowsNumber = false;
+    this.HeaderShow = true;
 	
 	return this;
 }
 
 MksBasicTable.prototype.SetStriped = function () {
 	this.Striped = true;
+}
+
+MksBasicTable.prototype.ShowRowNumber = function (value) {
+	this.RowsNumber = value;
+}
+
+MksBasicTable.prototype.ShowHeader = function (value) {
+	this.HeaderShow = value;
 }
 
 MksBasicTable.prototype.SetSchema = function (schema) {
@@ -37,12 +47,24 @@ MksBasicTable.prototype.SetSchema = function (schema) {
 MksBasicTable.prototype.SetData = function (data) {
 	this.Body = "";
     for (idx = 0; idx < data.length; idx++) {
-        this.Body += "<tr><th scope='row'>"+(idx+1)+"</th>";
+        if (this.RowsNumber == true) {
+            this.Body += "<tr><th scope='row'>"+(idx+1)+"</th>";
+        } else {
+            this.Body += "<tr>";
+        }
+        
         for (ydx = 0; ydx < data[idx].length; ydx++) {
             this.Body += "<td>" + data[idx][ydx] + "</td>";
         }
         this.Body += "</tr>";
     }
+}
+
+MksBasicTable.prototype.AppendSummary = function (data) {
+    this.Body += "<tr class='table-dark'>";
+    for (idx = 0; idx < data.length; idx++) {
+        this.Body += "<td>"+data[idx]+"</td>";
+    } this.Body += "</tr>";
 }
 
 MksBasicTable.prototype.Build = function (obj) {
@@ -55,7 +77,12 @@ MksBasicTable.prototype.Build = function (obj) {
 		html = html.split("[STRIPED]").join('');
 	}
 	
-    html = html.split("[HEAD]").join(this.Head);
+    if (this.HeaderShow == true) {
+        html = html.split("[HEAD]").join(this.Head);
+    } else {
+        html = html.split("[HEAD]").join("");
+    }
+    
     html = html.split("[BODY]").join(this.Body);
     obj.innerHTML = html;
 }
