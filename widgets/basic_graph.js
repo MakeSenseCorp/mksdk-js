@@ -91,6 +91,9 @@ MksBasicGraph.prototype.AddDataSet = function(data) {
         data: data.y,
         pointRadius: 0
     }
+    if (data.dashed) {
+        dataSet.borderDash = [5, 5];
+    }
     this.Config.data.labels = data.x;
     this.Config.data.datasets.push(dataSet);
 }
