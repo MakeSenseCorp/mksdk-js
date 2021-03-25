@@ -1,7 +1,7 @@
 function MkSCommon () {
 	self = this;
 	
-	this.MakeSenseDomain 			= "15.19.88.187";
+	this.MakeSenseDomain 			= "10.0.2.15";
 	this.MakeSenseServerUrl 		= "http://" + this.MakeSenseDomain + ":8080/";
 	this.MakeSenseLocalWebsockIP 	= "";
 	this.MakeSenseLocalWebsockPort 	= "";

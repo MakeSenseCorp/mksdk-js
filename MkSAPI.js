@@ -49,7 +49,7 @@ MkSAPI.prototype.ConnectLocalWS = function (uuid, callback) {
 	this.NodeWS.onopen = function () {
 		self.IsLocalWSEnabled = true;
 		console.log("LOCAL WEBSOCKET > CREATED", url);
-		callback();
+		callback({error: "none"});
 	};
 	this.NodeWS.onmessage = function (event) {
 		var jsonData = JSON.parse(event.data);
