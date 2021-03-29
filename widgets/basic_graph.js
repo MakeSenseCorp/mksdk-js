@@ -31,9 +31,18 @@ function MksBasicGraph (name) {
                 display: false,
                 text: ''
             },
+            legend: {
+                display: false
+            },
             tooltips: {
                 mode: 'index',
                 intersect: false,
+                callbacks: {
+                    label: function(tooltipItem) {
+                        // console.log(tooltipItem);
+                        return tooltipItem.yLabel;
+                    }
+                }
             },
             hover: {
                 mode: 'nearest',
