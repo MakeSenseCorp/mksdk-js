@@ -57,6 +57,7 @@ MkSAPI.prototype.ConnectLocalWS = function (uuid, callback) {
 		if ("GATEWAY" == jsonData.header.source) {
 		} else {
 			// console.log("[LOCAL #2] Identifier #", jsonData.piggybag.identifier, "recieved.", jsonData.data.header.command);
+			// TODO - SEGMENTATION
 			if (self.Callbacks[jsonData.piggybag.identifier]) {
 				handler = self.Callbacks[jsonData.piggybag.identifier];
 				handler.callback(jsonData, {error: "none"});
