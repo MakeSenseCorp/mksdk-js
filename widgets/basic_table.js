@@ -5,6 +5,17 @@ function MksBasicTable () {
     this.Head           = "";
     this.Body           = "";
     this.Content        = `
+        <div class="row" id="[HOST_ID]_baisc_table_listing">
+            <div class="col-lg-2 text-center"></div>
+            <div class="col-lg-2 text-center"><span id="[HOST_ID]_baisc_table_listing_index_left"></span></div>
+            <div class="col-lg-1 text-center" id="[HOST_ID]_baisc_table_listing_first"></div>
+            <div class="col-lg-1 text-center" id="[HOST_ID]_baisc_table_listing_left"></div>
+            <div class="col-lg-1 text-center" id="[HOST_ID]_baisc_table_listing_right"></div>
+            <div class="col-lg-1 text-center" id="[HOST_ID]_baisc_table_listing_last"></div>
+            <div class="col-lg-2 text-center"><span id="[HOST_ID]_baisc_table_listing_index_right"></span></div>
+            <div class="col-lg-2 text-center"></div>
+        </div>
+        <br>
         <div class="table-responsive">
             <table class="table table-sm [STRIPED] table-hover">
                 <thead>
@@ -17,14 +28,6 @@ function MksBasicTable () {
                 </tbody>
             </table>
         </div>
-        <div class="row" id="[HOST_ID]_baisc_table_listing">
-            <div class="col-lg-1 text-center"></div>
-            <div class="col-lg-3 text-center" id="[HOST_ID]_baisc_table_listing_first"></div>
-            <div class="col-lg-2 text-center" id="[HOST_ID]_baisc_table_listing_left"></div>
-            <div class="col-lg-2 text-center" id="[HOST_ID]_baisc_table_listing_right"></div>
-            <div class="col-lg-3 text-center" id="[HOST_ID]_baisc_table_listing_last"></div>
-            <div class="col-lg-1 text-center"></div>
-        </div>
     `;
 	this.Striped    = false;
     this.RowsNumber = false;
@@ -33,6 +36,8 @@ function MksBasicTable () {
     this.Window     = 30;
     this.Slice      = 1;
     this.Data       = null;
+    this.CountLeft  = 0;
+    this.CountRight = 0;
 
     this.UIChangeEvent = null;
 	
@@ -77,8 +82,11 @@ MksBasicTable.prototype.SetData = function (data) {
     if (this.Listing == true) {
         if (length > this.Window) {
             length = this.Window;
-            this.Data = data;
         }
+
+        this.Data = data;
+        this.CountLeft = 0;
+        this.CountRight = length + " (" + this.Data.length + ")";
     } 
 
     for (idx = 0; idx < length; idx++) {
@@ -105,6 +113,10 @@ MksBasicTable.prototype.AppendSummary = function (data) {
 MksBasicTable.prototype.LeftClick = function () {
     this.Body = "";
 
+    if (this.Data === undefined || this.Data === null) {
+        return;
+    }
+
     var start_length = 0;
     var end_length   = 0;
     if (this.Slice == 1) {
@@ -115,6 +127,9 @@ MksBasicTable.prototype.LeftClick = function () {
         end_length   = (this.Slice - 1) * this.Window;
         this.Slice -= 1;
     }
+
+    this.CountLeft  = start_length;
+    this.CountRight = end_length;
 
     for (idx = start_length; idx < end_length; idx++) {
         if (this.RowsNumber == true) {
@@ -129,6 +144,8 @@ MksBasicTable.prototype.LeftClick = function () {
         this.Body += "</tr>";
     }
     document.getElementById(this.WorkingObject.id+"_baisc_table_body").innerHTML = this.Body;
+    document.getElementById(this.WorkingObject.id+"_baisc_table_listing_index_left").innerHTML  = this.CountLeft;
+    document.getElementById(this.WorkingObject.id+"_baisc_table_listing_index_right").innerHTML = this.CountRight + " (" + this.Data.length + ")";
 
     if (this.UIChangeEvent !== undefined && this.UIChangeEvent !== null) {
         this.UIChangeEvent();
@@ -137,6 +154,10 @@ MksBasicTable.prototype.LeftClick = function () {
 
 MksBasicTable.prototype.RighClick = function () {
     this.Body = "";
+
+    if (this.Data === undefined || this.Data === null) {
+        return;
+    }
 
     var start_length = 0;
     var end_length   = 0;
@@ -149,6 +170,9 @@ MksBasicTable.prototype.RighClick = function () {
         end_length   = this.Data.length;
     }
 
+    this.CountLeft  = start_length;
+    this.CountRight = end_length;
+
     for (idx = start_length; idx < end_length; idx++) {
         if (this.RowsNumber == true) {
             this.Body += "<tr><th scope='row'>"+(idx+1)+"</th>";
@@ -162,6 +186,8 @@ MksBasicTable.prototype.RighClick = function () {
         this.Body += "</tr>";
     }
     document.getElementById(this.WorkingObject.id+"_baisc_table_body").innerHTML = this.Body;
+    document.getElementById(this.WorkingObject.id+"_baisc_table_listing_index_left").innerHTML  = this.CountLeft;
+    document.getElementById(this.WorkingObject.id+"_baisc_table_listing_index_right").innerHTML = this.CountRight + " (" + this.Data.length + ")";
 
     if (this.UIChangeEvent !== undefined && this.UIChangeEvent !== null) {
         this.UIChangeEvent();
@@ -169,11 +195,75 @@ MksBasicTable.prototype.RighClick = function () {
 }
 
 MksBasicTable.prototype.FirstClick = function () {
-    console.log("FirstClick",this.Data.length);
+    this.Body = "";
+
+    if (this.Data === undefined || this.Data === null) {
+        return;
+    }
+
+    var start_length = 0;
+    var end_length   = this.Window;
+    this.Slice       = 1;
+
+    this.CountLeft  = start_length;
+    this.CountRight = end_length;
+
+    for (idx = start_length; idx < end_length; idx++) {
+        if (this.RowsNumber == true) {
+            this.Body += "<tr><th scope='row'>"+(idx+1)+"</th>";
+        } else {
+            this.Body += "<tr>";
+        }
+        
+        for (ydx = 0; ydx < this.Data[idx].length; ydx++) {
+            this.Body += "<td>" + this.Data[idx][ydx] + "</td>";
+        }
+        this.Body += "</tr>";
+    }
+
+    document.getElementById(this.WorkingObject.id+"_baisc_table_body").innerHTML = this.Body;
+    document.getElementById(this.WorkingObject.id+"_baisc_table_listing_index_left").innerHTML  = this.CountLeft;
+    document.getElementById(this.WorkingObject.id+"_baisc_table_listing_index_right").innerHTML = this.CountRight + " (" + this.Data.length + ")";
+
+    if (this.UIChangeEvent !== undefined && this.UIChangeEvent !== null) {
+        this.UIChangeEvent();
+    }
 }
 
 MksBasicTable.prototype.LastClick = function () {
-    console.log("LastClick",this.Data.length);
+    this.Body = "";
+
+    if (this.Data === undefined || this.Data === null) {
+        return;
+    }
+
+    this.Slice       = ((this.Data.length / this.Window) - 1);
+    var start_length = this.Slice * this.Window;
+    var end_length   = this.Data.length;
+
+    this.CountLeft  = start_length;
+    this.CountRight = end_length;
+
+    for (idx = start_length; idx < end_length; idx++) {
+        if (this.RowsNumber == true) {
+            this.Body += "<tr><th scope='row'>"+(idx+1)+"</th>";
+        } else {
+            this.Body += "<tr>";
+        }
+        
+        for (ydx = 0; ydx < this.Data[idx].length; ydx++) {
+            this.Body += "<td>" + this.Data[idx][ydx] + "</td>";
+        }
+        this.Body += "</tr>";
+    }
+
+    document.getElementById(this.WorkingObject.id+"_baisc_table_body").innerHTML = this.Body;
+    document.getElementById(this.WorkingObject.id+"_baisc_table_listing_index_left").innerHTML  = this.CountLeft;
+    document.getElementById(this.WorkingObject.id+"_baisc_table_listing_index_right").innerHTML = this.CountRight + " (" + this.Data.length + ")";
+
+    if (this.UIChangeEvent !== undefined && this.UIChangeEvent !== null) {
+        this.UIChangeEvent();
+    }
 }
 
 MksBasicTable.prototype.Build = function (obj) {
@@ -197,35 +287,36 @@ MksBasicTable.prototype.Build = function (obj) {
     
     html = html.split("[BODY]").join(this.Body);
     obj.innerHTML = html;
-    console.log(HostingId);
 
     if (this.Listing == false) {
         document.getElementById(HostingId+"_baisc_table_listing").classList.add("d-none");
     } else {
-        this.objLeft = document.createElement("span");
+        this.objLeft = document.createElement("button");
         this.objLeft.style.color = "blue";
         this.objLeft.style.cursor = "pointer";
         this.objLeft.innerHTML = "<<";
         this.objLeft.onclick = this.LeftClick.bind(this);
 
-        this.objRight = document.createElement("span");
+        this.objRight = document.createElement("button");
         this.objRight.style.color = "blue";
         this.objRight.style.cursor = "pointer";
         this.objRight.innerHTML = ">>";
         this.objRight.onclick = this.RighClick.bind(this);
 
-        this.objFirst = document.createElement("span");
+        this.objFirst = document.createElement("button");
         this.objFirst.style.color = "blue";
         this.objFirst.style.cursor = "pointer";
         this.objFirst.innerHTML = "First";
         this.objFirst.onclick = this.FirstClick.bind(this);
 
-        this.objLast = document.createElement("span");
+        this.objLast = document.createElement("button");
         this.objLast.style.color = "blue";
         this.objLast.style.cursor = "pointer";
         this.objLast.innerHTML = "Last";
         this.objLast.onclick = this.LastClick.bind(this);
 
+        document.getElementById(HostingId+"_baisc_table_listing_index_left").innerHTML  = this.CountLeft;
+        document.getElementById(HostingId+"_baisc_table_listing_index_right").innerHTML = this.CountRight;
         document.getElementById(HostingId+"_baisc_table_listing_left").appendChild(this.objLeft);
         document.getElementById(HostingId+"_baisc_table_listing_right").appendChild(this.objRight);
         document.getElementById(HostingId+"_baisc_table_listing_first").appendChild(this.objFirst);
