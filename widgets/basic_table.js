@@ -5,16 +5,16 @@ function MksBasicTable () {
     this.Head           = "";
     this.Body           = "";
     this.Content        = `
-        <div class="row" id="[HOST_ID]_baisc_table_listing">
-            <div class="col-lg-2 text-center"></div>
-            <div class="col-lg-2 text-center"><span id="[HOST_ID]_baisc_table_listing_index_left"></span></div>
-            <div class="col-lg-1 text-center" id="[HOST_ID]_baisc_table_listing_first"></div>
-            <div class="col-lg-1 text-center" id="[HOST_ID]_baisc_table_listing_left"></div>
-            <div class="col-lg-1 text-center" id="[HOST_ID]_baisc_table_listing_right"></div>
-            <div class="col-lg-1 text-center" id="[HOST_ID]_baisc_table_listing_last"></div>
-            <div class="col-lg-2 text-center"><span id="[HOST_ID]_baisc_table_listing_index_right"></span></div>
-            <div class="col-lg-2 text-center"></div>
-        </div>
+        <nav aria-label="Page navigation example" id="[HOST_ID]_baisc_table_listing_nav">
+            <ul class="pagination justify-content-center" id="[HOST_ID]_baisc_table_listing_index_nav">
+                <li class="page-item disabled"><a class="page-link" href="#" id="[HOST_ID]_baisc_table_listing_index_left"></a></li>
+                <li class="page-item" id="[HOST_ID]_baisc_table_listing_first"></li>
+                <li class="page-item" id="[HOST_ID]_baisc_table_listing_left"></li>
+                <li class="page-item" id="[HOST_ID]_baisc_table_listing_right"></li>
+                <li class="page-item" id="[HOST_ID]_baisc_table_listing_last"></li>
+                <li class="page-item disabled"><a class="page-link" href="#" id="[HOST_ID]_baisc_table_listing_index_right"></a></li>
+            </ul>
+        </nav>
         <br>
         <div class="table-responsive">
             <table class="table table-sm [STRIPED] table-hover">
@@ -289,30 +289,35 @@ MksBasicTable.prototype.Build = function (obj) {
     obj.innerHTML = html;
 
     if (this.Listing == false) {
-        document.getElementById(HostingId+"_baisc_table_listing").classList.add("d-none");
+        document.getElementById(HostingId+"_baisc_table_listing_nav").classList.add("d-none");
     } else {
-        this.objLeft = document.createElement("button");
+        
+        this.objLeft = document.createElement("a");
         this.objLeft.style.color = "blue";
         this.objLeft.style.cursor = "pointer";
-        this.objLeft.innerHTML = "<<";
+        this.objLeft.innerHTML = "Previous";
+        this.objLeft.classList.add("page-link");
         this.objLeft.onclick = this.LeftClick.bind(this);
 
-        this.objRight = document.createElement("button");
+        this.objRight = document.createElement("a");
         this.objRight.style.color = "blue";
         this.objRight.style.cursor = "pointer";
-        this.objRight.innerHTML = ">>";
+        this.objRight.innerHTML = "Next";
+        this.objRight.classList.add("page-link");
         this.objRight.onclick = this.RighClick.bind(this);
 
-        this.objFirst = document.createElement("button");
+        this.objFirst = document.createElement("a");
         this.objFirst.style.color = "blue";
         this.objFirst.style.cursor = "pointer";
         this.objFirst.innerHTML = "First";
+        this.objFirst.classList.add("page-link");
         this.objFirst.onclick = this.FirstClick.bind(this);
 
-        this.objLast = document.createElement("button");
+        this.objLast = document.createElement("a");
         this.objLast.style.color = "blue";
         this.objLast.style.cursor = "pointer";
         this.objLast.innerHTML = "Last";
+        this.objLast.classList.add("page-link");
         this.objLast.onclick = this.LastClick.bind(this);
 
         document.getElementById(HostingId+"_baisc_table_listing_index_left").innerHTML  = this.CountLeft;
@@ -321,7 +326,7 @@ MksBasicTable.prototype.Build = function (obj) {
         document.getElementById(HostingId+"_baisc_table_listing_right").appendChild(this.objRight);
         document.getElementById(HostingId+"_baisc_table_listing_first").appendChild(this.objFirst);
         document.getElementById(HostingId+"_baisc_table_listing_last").appendChild(this.objLast);
-        document.getElementById(HostingId+"_baisc_table_listing").classList.remove("d-none");
+        document.getElementById(HostingId+"_baisc_table_listing_nav").classList.remove("d-none");
     }
 }
 
