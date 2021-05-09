@@ -46,6 +46,9 @@ MksMultiRangeSlider.prototype.Build = function (obj) {
     html = html.split("[RIGHT]").join(this.Config.right);
     obj.innerHTML = html;
 
+    this.LeftValue  = this.Config.left;
+    this.RightValue = this.Config.right;
+
     this.SliderObjectLeft   = document.getElementById(HostingId+"_range_left");
     this.SliderObject       = document.getElementById(HostingId+"_range_object");
     this.SliderObjectRight  = document.getElementById(HostingId+"_range_right");
