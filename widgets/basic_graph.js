@@ -1,5 +1,4 @@
 function MksBasicGraph (name) {
-	self 					= this;
 	this.API 				= null;
     this.Name               = name
 	
